@@ -2,14 +2,17 @@ import streamlit as st
 import pandas as pd
 import pickle
 
-# === LOAD MODEL ===
-with open('model_terbaik.pkl', 'rb') as file:
+# === LOAD MODEL YANG SUDAH DITRAIN DAN DISIMPAN SEBELUMNYA ===
+MODEL_PATH = 'model_terbaik.pkl'
+
+with open(MODEL_PATH, 'rb') as file:
     model = pickle.load(file)
 
+# === UI APLIKASI ===
 st.title("Obesity Level Prediction App")
 st.markdown("Masukkan data untuk memprediksi tingkat obesitas Anda.")
 
-# === USER INPUT ===
+# === INPUT USER ===
 age = st.number_input('Usia', 1, 120, 25)
 height = st.number_input('Tinggi Badan (m)', 1.0, 2.5, 1.70)
 weight = st.number_input('Berat Badan (kg)', 20, 300, 70)
@@ -28,7 +31,7 @@ scc = st.selectbox('Pantau kalori?', ['yes', 'no'])
 calc = st.selectbox('Konsumsi alkohol?', ['no', 'Sometimes', 'Frequently', 'Always'])
 mtrans = st.selectbox('Transportasi utama?', ['Automobile', 'Motorbike', 'Bike', 'Public_Transportation', 'Walking'])
 
-# === BENTUK DATAFRAME ===
+# === BENTUK DATAFRAME DARI INPUT ===
 input_df = pd.DataFrame([{
     'Age': age,
     'Height': height,
@@ -50,6 +53,9 @@ input_df = pd.DataFrame([{
 
 # === PREDIKSI ===
 if st.button("Prediksi"):
-    pred = model.predict(input_df)
-    st.subheader("Hasil Prediksi:")
-    st.success(f"Tingkat Obesitas Anda: **{pred[0]}**")
+    try:
+        prediction = model.predict(input_df)
+        st.subheader("Hasil Prediksi:")
+        st.success(f"Tingkat Obesitas Anda: **{prediction[0]}**")
+    except Exception as e:
+        st.error(f"Gagal melakukan prediksi. Pesan error: {e}")
