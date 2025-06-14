@@ -1,28 +1,30 @@
-# streamlit_app.py
+# App.py
 
 import streamlit as st
 import pandas as pd
-import numpy as np
 import pickle
 
-from sklearn.preprocessing import StandardScaler, OneHotEncoder
-from sklearn.compose import ColumnTransformer
-
+# ---------------------------------------
 # Load Model
-# Ganti path ini sesuai file model kamu
+# ---------------------------------------
 MODEL_PATH = 'model_terbaik.pkl'
 
 with open(MODEL_PATH, 'rb') as file:
     model = pickle.load(file)
 
-# Layout Streamlit
+# ---------------------------------------
+# Judul Aplikasi
+# ---------------------------------------
 st.title("Obesity Level Prediction App")
 st.markdown("""
-Aplikasi ini digunakan memprediksi tingkat obesitas berdasarkan data yang telah Anda inputkan.
+Aplikasi ini digunakan untuk memprediksi tingkat obesitas berdasarkan data yang Anda inputkan.
 """)
 
-# Input User
+# ---------------------------------------
+# Input Data Pengguna
+# ---------------------------------------
 st.header("Masukkan Data Anda:")
+
 age = st.number_input('Usia', min_value=1, max_value=120, value=25)
 height = st.number_input('Tinggi Badan (m)', min_value=1.0, max_value=2.5, value=1.70)
 weight = st.number_input('Berat Badan (kg)', min_value=20, max_value=300, value=70)
@@ -43,28 +45,47 @@ mtrans = st.selectbox('Transportasi utama?', [
     'Automobile', 'Motorbike', 'Bike', 'Public_Transportation', 'Walking'
 ])
 
-# Buat DataFrame Input
-input_data = pd.DataFrame([{
-    'Gender': gender,
-    'Age': age,
-    'Height': height,
-    'Weight': weight,
-    'family_history_with_overweight': family_history,
-    'FAVC': favc,
-    'FCVC': fcvc,
-    'NCP': ncp,
-    'CAEC': caec,
-    'SMOKE': smoke,
-    'CH2O': ch2o,
-    'SCC': scc,
-    'FAF': faf,
-    'TUE': tue,
-    'CALC': calc,
-    'MTRANS': mtrans
-}])
+# ---------------------------------------
+# Buat DataFrame dari Input
+# ---------------------------------------
+input_data = pd.DataFrame({
+    'Gender': [gender],
+    'Age': [age],
+    'Height': [height],
+    'Weight': [weight],
+    'family_history_with_overweight': [family_history],
+    'FAVC': [favc],
+    'FCVC': [fcvc],
+    'NCP': [ncp],
+    'CAEC': [caec],
+    'SMOKE': [smoke],
+    'SCC': [scc],
+    'CH2O': [ch2o],
+    'FAF': [faf],
+    'TUE': [tue],
+    'CALC': [calc],
+    'MTRANS': [mtrans]
+})
 
+# ---------------------------------------
+# Urutkan Kolom Sesuai Training
+# ---------------------------------------
+expected_order = [
+    'Gender', 'Age', 'Height', 'Weight', 'family_history_with_overweight',
+    'FAVC', 'FCVC', 'NCP', 'CAEC', 'SMOKE', 'SCC', 'CH2O',
+    'FAF', 'TUE', 'CALC', 'MTRANS'
+]
+
+input_data = input_data[expected_order]
+
+# ---------------------------------------
 # Prediksi
+# ---------------------------------------
 if st.button('Prediksi'):
-    prediction = model.predict(input_data)
-    st.subheader('Hasil Prediksi:')
-    st.success(f"Tingkat Obesitas Anda: **{prediction[0]}**")
+    try:
+        prediction = model.predict(input_data)
+        st.subheader('Hasil Prediksi:')
+        st.success(f"Tingkat Obesitas Anda: **{prediction[0]}**")
+    except Exception as e:
+        st.error("Terjadi kesalahan saat melakukan prediksi.")
+        st.error(str(e))
