@@ -44,24 +44,24 @@ mtrans = st.selectbox('Transportasi utama?', [
 ])
 
 # Buat DataFrame Input
-input_data = pd.DataFrame({
-    'Age': [age],
-    'Height': [height],
-    'Weight': [weight],
-    'FCVC': [fcvc],
-    'NCP': [ncp],
-    'CH2O': [ch2o],
-    'FAF': [faf],
-    'TUE': [tue],
-    'Gender': [gender],
-    'family_history_with_overweight': [family_history],
-    'FAVC': [favc],
-    'CAEC': [caec],
-    'SMOKE': [smoke],
-    'SCC': [scc],
-    'CALC': [calc],
-    'MTRANS': [mtrans]
-})
+input_data = pd.DataFrame([{
+    'Gender': gender,
+    'Age': age,
+    'Height': height,
+    'Weight': weight,
+    'family_history_with_overweight': family_history,
+    'FAVC': favc,
+    'FCVC': fcvc,
+    'NCP': ncp,
+    'CAEC': caec,
+    'SMOKE': smoke,
+    'CH2O': ch2o,
+    'SCC': scc,
+    'FAF': faf,
+    'TUE': tue,
+    'CALC': calc,
+    'MTRANS': mtrans
+}])
 
 # Prediksi
 if st.button('Prediksi'):
