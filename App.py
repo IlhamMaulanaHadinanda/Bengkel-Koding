@@ -5,26 +5,23 @@ import pandas as pd
 import numpy as np
 import pickle
 
-# -----------------------------------------------------
+from sklearn.preprocessing import StandardScaler, OneHotEncoder
+from sklearn.compose import ColumnTransformer
+
 # Load Model
-# -----------------------------------------------------
-MODEL_PATH = 'model_terbaik.pkl'  # Pastikan file ini ada di direktori yang sama
+# Ganti path ini sesuai file model kamu
+MODEL_PATH = 'model_terbaik.pkl'
 
 with open(MODEL_PATH, 'rb') as file:
     model = pickle.load(file)
 
-# -----------------------------------------------------
 # Layout Streamlit
-# -----------------------------------------------------
 st.title("Obesity Level Prediction App")
 st.markdown("""
-Aplikasi ini memprediksi tingkat obesitas berdasarkan data yang Anda inputkan.
+Aplikasi ini digunakan memprediksi tingkat obesitas berdasarkan data yang telah Anda inputkan.
 """)
 
-# -----------------------------------------------------
 # Input User
-# -----------------------------------------------------
-# Numerical Inputs
 st.header("Masukkan Data Anda:")
 age = st.number_input('Usia', min_value=1, max_value=120, value=25)
 height = st.number_input('Tinggi Badan (m)', min_value=1.0, max_value=2.5, value=1.70)
@@ -35,7 +32,6 @@ ch2o = st.slider('Konsumsi air (1-3)', 1, 3, 2)
 faf = st.slider('Aktivitas fisik (0-3)', 0, 3, 1)
 tue = st.slider('Waktu layar (0-2)', 0, 2, 1)
 
-# Categorical Inputs
 gender = st.selectbox('Jenis Kelamin', ['Male', 'Female'])
 family_history = st.selectbox('Riwayat Keluarga Kelebihan Berat Badan?', ['yes', 'no'])
 favc = st.selectbox('Sering makan makanan tinggi kalori?', ['yes', 'no'])
@@ -47,35 +43,28 @@ mtrans = st.selectbox('Transportasi utama?', [
     'Automobile', 'Motorbike', 'Bike', 'Public_Transportation', 'Walking'
 ])
 
-# -----------------------------------------------------
 # Buat DataFrame Input
-# -----------------------------------------------------
-input_data = pd.DataFrame([{
-    'Gender': gender,
-    'Age': age,
-    'Height': height,
-    'Weight': weight,
-    'family_history_with_overweight': family_history,
-    'FAVC': favc,
-    'FCVC': fcvc,
-    'NCP': ncp,
-    'CAEC': caec,
-    'SMOKE': smoke,
-    'CH2O': ch2o,
-    'SCC': scc,
-    'FAF': faf,
-    'TUE': tue,
-    'CALC': calc,
-    'MTRANS': mtrans
-}])
+input_data = pd.DataFrame({
+    'Age': [age],
+    'Height': [height],
+    'Weight': [weight],
+    'FCVC': [fcvc],
+    'NCP': [ncp],
+    'CH2O': [ch2o],
+    'FAF': [faf],
+    'TUE': [tue],
+    'Gender': [gender],
+    'family_history_with_overweight': [family_history],
+    'FAVC': [favc],
+    'CAEC': [caec],
+    'SMOKE': [smoke],
+    'SCC': [scc],
+    'CALC': [calc],
+    'MTRANS': [mtrans]
+})
 
-# -----------------------------------------------------
 # Prediksi
-# -----------------------------------------------------
 if st.button('Prediksi'):
-    try:
-        prediction = model.predict(input_data)
-        st.subheader('Hasil Prediksi:')
-        st.success(f"Tingkat Obesitas Anda: **{prediction[0]}**")
-    except Exception as e:
-        st.error(f"Terjadi kesalahan saat prediksi: {e}")
+    prediction = model.predict(input_data)
+    st.subheader('Hasil Prediksi:')
+    st.success(f"Tingkat Obesitas Anda: **{prediction[0]}**")
